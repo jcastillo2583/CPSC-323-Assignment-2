@@ -26,7 +26,7 @@ bool isKeyword(char input[]) {
 //-----------------------------------------------------------------------------------------
 
 void syntaxId() {
-
+	
 }
 
 void syntaxSep() {
@@ -41,10 +41,15 @@ void syntaxNum() {
 
 }
 
+void syntaxOp() {
+
+}
+
 //-----------------------------------------------------------------------------------------
 
 
 int main() {
+	bool print = false;
 	char testChar, testWord[20], operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	ifstream file("SampleInputFile.txt");
 	int i, j = 0;
@@ -82,8 +87,9 @@ int main() {
 				if (testChar == operators[i]) {
 					//cout << testChar << " is operator\n";
 					myfile << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
-					cout << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
-					//operator has no syntax output
+					if (print)
+						cout << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
+					syntaxOp();
 					flag = 1;
 				}
 			}
@@ -93,7 +99,8 @@ int main() {
 				if (testChar == separators[i]) {
 					//cout << testChar << " is separator\n";
 					myfile << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
-					cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
+					if (print)
+						cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
 					syntaxSep();
 					flag = 1;
 				}
@@ -103,7 +110,8 @@ int main() {
 			{
 				//cout << testChar << " is a number\n";
 				myfile << "\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
-				cout << "\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
+				if (print)
+					cout << "\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
 				syntaxNum();
 			}
 
@@ -122,13 +130,15 @@ int main() {
 				if (isKeyword(testWord)) {
 					//cout << testWord << " is keyword\n";
 					myfile << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
-					cout << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
+					if (print)
+						cout << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
 					syntaxKey();
 				}
 				else {
 					//cout << testWord << " is identifier\n";
 					myfile << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
-					cout << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
+					if (print)
+						cout << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
 					syntaxId();
 				}
 
