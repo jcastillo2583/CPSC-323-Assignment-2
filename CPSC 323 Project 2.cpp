@@ -25,24 +25,34 @@ bool isKeyword(char input[]) {
 
 //-----------------------------------------------------------------------------------------
 
-void syntaxId() {
-	
+string syntaxId() {
+	string str;
+	str = "<Statement List>";
+	return str;
 }
 
-void syntaxSep() {
-
+string syntaxSep() {
+	string str;
+	str = "<>";
+	return str;
 }
 
-void syntaxKey() {
-
+string syntaxKey() {
+	string str;
+	str = "<>";
+	return str;
 }
 
-void syntaxNum() {
-
+string syntaxNum() {
+	string str;
+	str = "<>";
+	return str;
 }
 
-void syntaxOp() {
-
+string syntaxOp() {
+	string str;
+	str = "<Epsilon>";
+	return str;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -86,10 +96,10 @@ int main() {
 			{
 				if (testChar == operators[i]) {
 					//cout << testChar << " is operator\n";
-					myfile << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
+					myfile << "\n\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
 					if (print)
 						cout << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
-					syntaxOp();
+					myfile << syntaxOp();
 					flag = 1;
 				}
 			}
@@ -98,10 +108,10 @@ int main() {
 			{
 				if (testChar == separators[i]) {
 					//cout << testChar << " is separator\n";
-					myfile << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
+					myfile << "\n\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
 					if (print)
 						cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
-					syntaxSep();
+					myfile << syntaxSep();
 					flag = 1;
 				}
 			}
@@ -109,10 +119,10 @@ int main() {
 			if (isdigit(testChar) && !isalnum(testChar - 1))
 			{
 				//cout << testChar << " is a number\n";
-				myfile << "\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
+				myfile << "\n\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
 				if (print)
 					cout << "\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
-				syntaxNum();
+				myfile << syntaxNum();
 			}
 
 			//If the first character is not operator nor the seperator, get all the rest of word until reach space
@@ -129,17 +139,17 @@ int main() {
 
 				if (isKeyword(testWord)) {
 					//cout << testWord << " is keyword\n";
-					myfile << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
+					myfile << "\n\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
 					if (print)
 						cout << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
-					syntaxKey();
+					myfile << syntaxKey();
 				}
 				else {
 					//cout << testWord << " is identifier\n";
-					myfile << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
+					myfile << "\n\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
 					if (print)
 						cout << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
-					syntaxId();
+					myfile << syntaxId();
 				}
 
 				flag = 0;
