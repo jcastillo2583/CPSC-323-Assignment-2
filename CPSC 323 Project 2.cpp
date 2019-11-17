@@ -143,7 +143,7 @@ void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWo
 	//If the first character is not operator nor the seperator, get all the rest of word until reach space
 	if (isalnum(testChar) || testChar == '$')
 	{
-		cout << "IS ALNUM: " << testChar << "\tj = " << j << endl;\
+		//cout << "IS ALNUM: " << testChar << "\tj = " << j << endl;
 		bool stop = false;
 		char next;
 		if (testChar == ' ' ||  testChar == '\n')
@@ -186,9 +186,9 @@ void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWo
 			myfile << syntaxKey();
 		}
 		else {
-			myfile << "\n\nToken:\tIDENTIFIER" << "\t\tLexme:\t'" << testWord;
+			myfile << "\n\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord;
 			if (printline)
-				myfile << "' at line " << lineNum;
+				myfile << " at line " << lineNum;
 			myfile << endl;
 			if (print)
 				cout << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
