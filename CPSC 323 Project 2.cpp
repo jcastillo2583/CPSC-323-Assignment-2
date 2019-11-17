@@ -64,8 +64,6 @@ void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWo
 	char operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	int i;
 
-	//We get the first character of each word
-
 
 	//check if comment
 	if (testChar == '!') {
@@ -233,8 +231,6 @@ int main() {
 		if (testChar == '\n')
 			lineNum++;
 		testChar = file.get();
-		//if (testChar == '\n')
-			//lineNum++;
 		lexer(file, myfile, testChar, j, testWord, lineNum);
 	}
 	
