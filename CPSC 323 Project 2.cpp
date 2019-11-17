@@ -23,6 +23,7 @@ bool isKeyword(char input[]) {
 	return false;
 }
 
+
 //-----------------------------------------------------------------------------------------
 
 string syntaxId() {
@@ -58,18 +59,165 @@ string syntaxOp() {
 //-----------------------------------------------------------------------------------------
 
 
+void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWord[20], int &lineNum) {
+	bool print = false, printline = true, test = false;
+	char operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
+	int i;
+
+	//We get the first character of each word
+
+
+	//check if comment
+	if (testChar == '!') {
+		testChar = file.get();
+		while (testChar != '!') {
+			testChar = file.get();
+		}
+		return;
+	}
+
+	//Check operator
+	for (i = 0; i < 6; ++i)
+	{
+		if (testChar == operators[i]) {
+			//cout << testChar << " is operator\n";
+			myfile << "\n\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar;
+			if (printline)
+				myfile << " at line " << lineNum;
+			myfile << endl;
+			if (print)
+				cout << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
+			myfile << syntaxOp();
+			flag = 1;
+			return;
+		}
+	}
+
+	//Check seprator
+	for (i = 0; i < 11; ++i)
+	{
+		if (testChar == separators[i]) {
+			//cout << testChar << " is separator\n";
+			myfile << "\n\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar;
+			if (printline)
+				myfile << " at line " << lineNum;
+			myfile << endl;
+			if (print)
+				cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
+			myfile << syntaxSep();
+			flag = 1;
+			return;
+		}
+	}
+
+	//Check if number is real or integer??????**************************************
+	if (isdigit(testChar))
+	{
+		//cout << testChar << " is a number\n";
+		char str[5];
+		int x = 0;
+		testWord[j] = '\0';
+		j = 0;
+		str[x] = testChar;
+
+		while (isdigit(file.peek())) {
+			testChar = file.get();
+			str[x] = testChar;
+			x++;
+		}
+
+		myfile << "\n\nToken:\tNUMBER" << "\t\t\tLexme:\t";
+		if (x == 0)
+			myfile << str[0];
+		else {
+			for (int u = 0; u < x; u++) {
+				testWord[j] = '\0';
+				myfile << str[u];
+			}
+		}
+		if (printline)
+			myfile << " at line " << lineNum;
+		myfile << endl;
+		flag = 0;
+		return;
+	}
+
+	//If the first character is not operator nor the seperator, get all the rest of word until reach space
+	if (isalnum(testChar) || testChar == '$')
+	{
+		cout << "IS ALNUM: " << testChar << "\tj = " << j << endl;\
+		bool stop = false;
+		char next;
+		if (testChar == ' ' ||  testChar == '\n')
+			stop = true;
+		while (!stop) {
+			testWord[j++] = testChar;
+			next = file.peek();
+			for (i = 0; i < 11; ++i)
+			{
+				if (next == separators[i]) {
+					stop = true;
+				}
+			}
+			for (i = 0; i < 6; ++i)
+			{
+				if (next == operators[i]) {
+					stop = true;
+				}
+			}
+			if(!stop)
+				testChar = file.get();
+			if (testChar == ' ' ||  testChar == '\n')
+				stop = true;
+		}
+
+		test = true;
+		//Make the rest of c string become null
+		testWord[j] = '\0';
+		//reset new index of testWord for next testWord
+		j = 0;
+
+
+		if (isKeyword(testWord)) {
+			myfile << "\n\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord;
+			if (printline)
+				myfile << " at line " << lineNum;
+			myfile << endl;
+			if (print)
+				cout << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
+			myfile << syntaxKey();
+		}
+		else {
+			myfile << "\n\nToken:\tIDENTIFIER" << "\t\tLexme:\t'" << testWord;
+			if (printline)
+				myfile << "' at line " << lineNum;
+			myfile << endl;
+			if (print)
+				cout << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
+			myfile << syntaxId();
+		}
+		flag = 0;
+	}
+	//cout << test << endl;
+
+}
+
+
+
+
+
+//-----------------------------------------------------------------------------------------
+
+
 int main() {
-	bool print = false;
-	char testChar, testWord[20], operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	ifstream file("SampleInputFile.txt");
-	int i, j = 0;
+	char testWord[20], testChar = ' ';
+	int lineNum = 1;
 
 	ofstream myfile;
 	myfile.open("Syntax Analysis");    //makes file named Lexical Analysis
-	myfile << "      SYNTAX ANALYSIS" << endl;
-	myfile << "------------------------" << endl;
-	//myfile << "TOKENS \t\tLEXEMES " << endl << endl;
-
+	myfile << "            SYNTAX ANALYSIS" << endl;
+	myfile << "----------------------------------------------------" << endl;
 
 	if (!file.is_open()) {
 		//cout << "Error while opening the file, please change file name to SampleInputFile\n";
@@ -77,83 +225,17 @@ int main() {
 		exit(0);
 	}
 
+
+	
+	int i, j = 0;
 	while (!file.eof())
 	{
-		//We get the first character of each word
+		if (testChar == '\n')
+			lineNum++;
 		testChar = file.get();
-		//cout << "\tTEST CHAR IS " << testChar;
-
-		//check if comment
-		if (testChar == '!') {
-			testChar = file.get();
-			while (testChar != '!') {
-				testChar = file.get();
-			}
-		}
-
-			//Check operator
-			for (i = 0; i < 6; ++i)
-			{
-				if (testChar == operators[i]) {
-					//cout << testChar << " is operator\n";
-					myfile << "\n\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
-					if (print)
-						cout << "\nToken:\tOPERATOR" << "\t\tLexme:\t" << testChar << endl;
-					myfile << syntaxOp();
-					flag = 1;
-				}
-			}
-			//Check seprator
-			for (i = 0; i < 11; ++i)
-			{
-				if (testChar == separators[i]) {
-					//cout << testChar << " is separator\n";
-					myfile << "\n\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
-					if (print)
-						cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
-					myfile << syntaxSep();
-					flag = 1;
-				}
-			}
-			//Check if number is real or integer??????
-			if (isdigit(testChar) && !isalnum(testChar - 1))
-			{
-				//cout << testChar << " is a number\n";
-				myfile << "\n\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
-				if (print)
-					cout << "\nToken:\tNUMBER:" << "\t\tLexme:\t" << testChar << endl;
-				myfile << syntaxNum();
-			}
-
-			//If the first character is not operator nor the seperator, get all the rest of word until reach space
-			if (isalnum(testChar) || testChar == '$')
-			{
-				testWord[j++] = testChar;
-			}
-			else if ((testChar == ' ' || flag == 1 || testChar == '\n') && (j != 0))
-			{
-				//Make the rest of c string become null
-				testWord[j] = '\0';
-				//reset new index of testWord for next testWord
-				j = 0;
-
-				if (isKeyword(testWord)) {
-					//cout << testWord << " is keyword\n";
-					myfile << "\n\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
-					if (print)
-						cout << "\nToken:\tKEYWORD" << "\t\t\tLexme:\t" << testWord << endl;
-					myfile << syntaxKey();
-				}
-				else {
-					//cout << testWord << " is identifier\n";
-					myfile << "\n\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
-					if (print)
-						cout << "\nToken:\tIDENTIFIER" << "\t\tLexme:\t" << testWord << endl;
-					myfile << syntaxId();
-				}
-
-				flag = 0;
-			}
+		//if (testChar == '\n')
+			//lineNum++;
+		lexer(file, myfile, testChar, j, testWord, lineNum);
 	}
 	
 	file.close();
