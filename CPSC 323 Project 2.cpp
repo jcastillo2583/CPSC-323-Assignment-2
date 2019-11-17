@@ -9,6 +9,9 @@ using namespace std;
 char testChar = ' ';
 char stack[20];
 int flag = 0, lineNum = 1, stackindex = 0;
+ifstream file("SampleInputFile.txt");
+char testWord[20];
+ofstream myfile;
 
 bool isKeyword(char input[]) {
 	char keyWords[20][10] = { "int", "float", "bool", "if", "else", "then", "endif", "while",
@@ -25,6 +28,16 @@ bool isKeyword(char input[]) {
 	return false;
 }
 
+void syntaxError(string str)
+{
+	//Clear output file
+	myfile.close();
+	myfile.open("Syntax Analysis", ios::out|ios::trunc);
+	// Output error message
+	myfile << "ERROR: " << str << endl << " Line: " << lineNum;
+	exit(EXIT_FAILURE);
+}
+
 
 //-----------------------------------------------------------------------------------------
 
@@ -37,10 +50,23 @@ string syntaxId() {
 string syntaxSep() {
 	string str;
 
-	char closers[3] = { ')', ']', '}' };
-	for (char a : closers) {
-		if (testChar == a) {//know which closing separator testChar is
-			if(stack[stackindex]);
+	char openers[3] = { '(', '[', '{'}, closers[3] = { ')', ']', '}' };
+	for (int a = 0; a < 3; a++) {
+		if (testChar == closers[a]) {//know testChar is a closing separator
+			if (openers[a] == stack[stackindex]) {
+				//continue
+				stack[stackindex] = ' ';
+				stackindex--;
+			}
+			else
+				syntaxError("Closing separator incompatible");
+		}
+	}
+	for (int a = 0; a < 3; a++) {
+		if (testChar == openers[a]) {//know testChar is a closing separator
+			stackindex++;
+			stack[stackindex] = testChar;//add separator to the stack
+			//continue
 		}
 	}
 
@@ -67,18 +93,10 @@ string syntaxOp() {
 	return str;
 }
 
-
-void syntaxError(ifstream &file, ofstream &myfile, string str)
-{
-    //Clear output file
-    myfile.clear();
-    // Output error message
-    myfile<< "ERROR: " <<str<<endl<<" Line: "<< lineNum <<endl;
-}
 //-----------------------------------------------------------------------------------------
 
 
-void lexer(ifstream &file, ofstream &myfile, int &j, char testWord[20]) {
+void lexer(int &j) {
 	bool print = false, printline = true, test = false;
 	char operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	int i;
@@ -227,10 +245,7 @@ void lexer(ifstream &file, ofstream &myfile, int &j, char testWord[20]) {
 
 
 int main() {
-	ifstream file("SampleInputFile.txt");
-	char testWord[20];
-
-	ofstream myfile;
+	
 	myfile.open("Syntax Analysis");    //makes file named Syntax Analysis
 	myfile << "            SYNTAX ANALYSIS" << endl;
 	myfile << "----------------------------------------------------" << endl;
@@ -249,7 +264,7 @@ int main() {
 		if (testChar == '\n')
 			lineNum++;
 		testChar = file.get();
-		lexer(file, myfile, j, testWord);
+		lexer(j);
 	}
 	
 	file.close();
