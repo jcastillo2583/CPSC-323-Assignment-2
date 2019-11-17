@@ -6,7 +6,9 @@
 #include<type_traits>
 
 using namespace std;
-int flag = 0, lineNum = 1;
+char testChar = ' ';
+char stack[20];
+int flag = 0, lineNum = 1, stackindex = 0;
 
 bool isKeyword(char input[]) {
 	char keyWords[20][10] = { "int", "float", "bool", "if", "else", "then", "endif", "while",
@@ -34,6 +36,14 @@ string syntaxId() {
 
 string syntaxSep() {
 	string str;
+
+	char closers[3] = { ')', ']', '}' };
+	for (char a : closers) {
+		if (testChar == a) {//know which closing separator testChar is
+			if(stack[stackindex]);
+		}
+	}
+
 	str = "<>";
 	return str;
 }
@@ -52,14 +62,15 @@ string syntaxNum() {
 
 string syntaxOp() {
 	string str;
-	str = "<Epsilon>";
+	if(testChar != '=')
+		str = " <Empty>->Epsilon\n <TermPrime> -> * <Factor> <TermPrime> | / <Factor> <TermPrime> | <Empty>\n <Empty>->Epsilon\n <ExpressionPrime> -> + <Term> <ExpressionPrime> | -<Term> <ExpressionPrime> | <Empty>\n <Empty>->Epsilon";
 	return str;
 }
 
 //-----------------------------------------------------------------------------------------
 
 
-void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWord[20]) {
+void lexer(ifstream &file, ofstream &myfile, int &j, char testWord[20]) {
 	bool print = false, printline = true, test = false;
 	char operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	int i;
@@ -209,7 +220,7 @@ void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWo
 
 int main() {
 	ifstream file("SampleInputFile.txt");
-	char testWord[20], testChar = ' ';
+	char testWord[20];
 
 	ofstream myfile;
 	myfile.open("Syntax Analysis");    //makes file named Syntax Analysis
@@ -230,7 +241,7 @@ int main() {
 		if (testChar == '\n')
 			lineNum++;
 		testChar = file.get();
-		lexer(file, myfile, testChar, j, testWord);
+		lexer(file, myfile, j, testWord);
 	}
 	
 	file.close();
