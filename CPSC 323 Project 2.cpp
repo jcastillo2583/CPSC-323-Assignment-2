@@ -67,6 +67,14 @@ string syntaxOp() {
 	return str;
 }
 
+
+void syntaxError(ifstream &file, ofstream &myfile, string str)
+{
+    //Clear output file
+    myfile.clear();
+    // Output error message
+    myfile<< "ERROR: " <<str<<endl<<" Line: "<< lineNum <<endl;
+}
 //-----------------------------------------------------------------------------------------
 
 
