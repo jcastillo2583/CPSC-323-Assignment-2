@@ -213,7 +213,7 @@ int main() {
 	int lineNum = 1;
 
 	ofstream myfile;
-	myfile.open("Syntax Analysis");    //makes file named Lexical Analysis
+	myfile.open("Syntax Analysis");    //makes file named Syntax Analysis
 	myfile << "            SYNTAX ANALYSIS" << endl;
 	myfile << "----------------------------------------------------" << endl;
 
