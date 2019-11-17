@@ -6,7 +6,7 @@
 #include<type_traits>
 
 using namespace std;
-int flag = 0;
+int flag = 0, lineNum = 1;
 
 bool isKeyword(char input[]) {
 	char keyWords[20][10] = { "int", "float", "bool", "if", "else", "then", "endif", "while",
@@ -59,7 +59,7 @@ string syntaxOp() {
 //-----------------------------------------------------------------------------------------
 
 
-void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWord[20], int &lineNum) {
+void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWord[20]) {
 	bool print = false, printline = true, test = false;
 	char operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	int i;
@@ -210,7 +210,6 @@ void lexer(ifstream &file, ofstream &myfile, char &testChar, int &j, char testWo
 int main() {
 	ifstream file("SampleInputFile.txt");
 	char testWord[20], testChar = ' ';
-	int lineNum = 1;
 
 	ofstream myfile;
 	myfile.open("Syntax Analysis");    //makes file named Syntax Analysis
@@ -231,7 +230,7 @@ int main() {
 		if (testChar == '\n')
 			lineNum++;
 		testChar = file.get();
-		lexer(file, myfile, testChar, j, testWord, lineNum);
+		lexer(file, myfile, testChar, j, testWord);
 	}
 	
 	file.close();
