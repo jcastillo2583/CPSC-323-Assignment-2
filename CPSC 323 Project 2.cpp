@@ -7,6 +7,7 @@
 
 using namespace std;
 char testChar = ' ', stack[20] = " ", testWord[20];
+char testCharList[20];
 char keyWords[20][10] = { "int", "float", "bool", "if", "else", "then", "endif", "while",
 		"whileend", "do", "doend", "for", "forend", "input", "output",
 		"and", "or", "function", "void", "main" };
