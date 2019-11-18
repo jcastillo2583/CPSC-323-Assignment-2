@@ -76,6 +76,8 @@ string syntaxSep() {
 
 string syntaxKey() {
 	string str;
+char wordsWithParenthese[7][10] = { "if", "while", "for", "forend","function", "void", "main" };
+
 	str = "<>";
 	return str;
 }
