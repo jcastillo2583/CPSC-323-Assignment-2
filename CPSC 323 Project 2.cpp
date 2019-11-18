@@ -88,9 +88,25 @@ string syntaxNum() {
 
 string syntaxOp() {
 	string str;
-	if(testChar != '=')
-		str = " <Empty>->Epsilon\n <TermPrime> -> * <Factor> <TermPrime> | / <Factor> <TermPrime> | <Empty>\n <Empty>->Epsilon\n <ExpressionPrime> -> + <Term> <ExpressionPrime> | -<Term> <ExpressionPrime> | <Empty>\n <Empty>->Epsilon";
-	return str;
+	if (testChar == '*') {
+		myfile << " <TermPrime> -> * <Factor> <TermPrime>\n";
+		myfile << " <ExpressionPrime> -> <Empty>\n";
+	}
+	else if (testChar == '/'){
+		myfile << " <TermPrime> -> / <Factor> <TermPrime>\n";
+		myfile << " <ExpressionPrime> -> <Empty>\n";
+		}
+	if (testChar == '+') {
+		myfile << " <TermPrime> -> <Empty>\n";
+		myfile << " <ExpressionPrime> -> + <Term> <ExpressionPrime>\n";
+	}
+	else if (testChar == '-') {
+		myfile << " <TermPrime> -> <Empty>\n";
+		myfile << " <ExpressionPrime> -> - <Term> <ExpressionPrime>\n";
+	}
+	myfile << " <Empty>->Epsilon\n";
+		
+		return str;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -139,7 +155,7 @@ void lexer(int &j) {
 			myfile << endl;
 			if (print)
 				cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
-			myfile << syntaxSep();
+			syntaxSep();
 			flag = 1;
 			return;
 		}
