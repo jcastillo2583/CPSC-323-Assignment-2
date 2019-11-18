@@ -6,17 +6,16 @@
 #include<type_traits>
 
 using namespace std;
-char testChar = ' ';
-char stack[20];
-int flag = 0, lineNum = 1, stackindex = 0;
-ifstream file("SampleInputFile.txt");
-char testWord[20];
-ofstream myfile;
-
-bool isKeyword(char input[]) {
-	char keyWords[20][10] = { "int", "float", "bool", "if", "else", "then", "endif", "while",
+char testChar = ' ', stack[20] = " ", testWord[20];
+char keyWords[20][10] = { "int", "float", "bool", "if", "else", "then", "endif", "while",
 		"whileend", "do", "doend", "for", "forend", "input", "output",
 		"and", "or", "function", "void", "main" };
+bool conditionset;
+int flag = 0, lineNum = 1, stackindex = 0;
+ifstream file("SampleInputFile.txt");
+ofstream myfile;
+
+bool isKeyword(char input[]) {	
 	int i;
 
 	for (i = 0; i < 32; ++i) {
@@ -34,7 +33,7 @@ void syntaxError(string str)
 	myfile.close();
 	myfile.open("Syntax Analysis", ios::out|ios::trunc);
 	// Output error message
-	myfile << "ERROR: " << str << endl << " Line: " << lineNum;
+	myfile << "ERROR: " << str << " at line: " << lineNum;
 	exit(EXIT_FAILURE);
 }
 
@@ -43,48 +42,88 @@ void syntaxError(string str)
 
 string syntaxId() {
 	string str;
-	str = "<Statement List>";
+	str = " <Statement List>";
 	return str;
 }
 
 string syntaxSep() {
-	string str;
+	string str = " <Separator> -> ";
 
-	char openers[3] = { '(', '[', '{'}, closers[3] = { ')', ']', '}' };
-	for (int a = 0; a < 3; a++) {
-		if (testChar == closers[a]) {//know testChar is a closing separator
+	char openers[5] = { "([{'"}, closers[] = { ")]}'"};
+	//openers[5] += '"';
+	for (int a = 0; a < 4; a++) {
+		if (testChar == openers[a] && stack[stackindex] != openers[a]) {//know testChar is a closing separator
+			stackindex++;
+			stack[stackindex] = testChar;//add separator to the stack
+
+			if (testChar == '(') {
+				str += " <Condition>\n";
+				str += " <Condition> -> ( <StatementList>";
+			}
+			else {
+				str += " <OpeningSeparator> <StatementList>\n";
+				str += " <OpeningSeparator> -> " + testChar;
+			}
+			return str;
+		}
+		else if (testChar == closers[a]) {//know testChar is a closing separator
 			if (openers[a] == stack[stackindex]) {
 				//continue
 				stack[stackindex] = ' ';
 				stackindex--;
+				if (testChar == ')') {
+					str += " <Condition>\n";
+					str += " <Condition> -> <StatementList> )";
+					str += "\n <StatementList> -> Epsilon";
+				}
+				else {
+					str += " <StatementList> <ClosingSeparator>\n";
+					str += " <ClosingSeparator> -> " + testChar;
+				}
+				return str;
 			}
 			else
 				syntaxError("Closing separator incompatible");
 		}
 	}
-	for (int a = 0; a < 3; a++) {
-		if (testChar == openers[a]) {//know testChar is a closing separator
-			stackindex++;
-			stack[stackindex] = testChar;//add separator to the stack
-			//continue
-		}
-	}
-
-	str = "<>";
+	str += " <EndSeparator>\n";
 	return str;
 }
 
 string syntaxKey() {
 	string str;
-char wordsWithParenthese[7][10] = { "if", "while", "for", "forend","function", "void", "main" };
 
-	str = "<>";
+	char wordsWithParenthese[7][10] = { "if", "while", "for", "forend","function", "main" };
+	for (int z = 0; z < 7; z++) {
+		if (strcmp(testWord, wordsWithParenthese[z]) == 0)
+			conditionset = true;
+	}
+
+	for (int a = 0; a < 20; a++) {
+		if (strcmp(testWord, keyWords[a]) == 0) {
+			string key = (string)keyWords[a];
+
+			if (a < 3) { //is a variable
+				str += " <KeyWord> -> <Variable>\n";
+				str += " <Variable> -> <" + key + ">";
+			}
+			else if (a > 2 && a < 13) {//is a conditional
+				str += " <KeyWord> -> <Conditional>\n";
+				str += " <Conditional> -> <" + key + "> + <Separator>";
+			}
+			else {//is a function
+				str += " <KeyWord> -> <Function>\n";
+				str += " <Function> -> <" + key + ">";
+			}
+		}
+	}
 	return str;
 }
 
 string syntaxNum() {
 	string str;
-	str = "<>";
+	str = " <Number> -> <Assign>";
+	str = " <Assign> -> <" + (string)testWord + ">";
 	return str;
 }
 
@@ -115,10 +154,20 @@ string syntaxOp() {
 
 
 void lexer(int &j) {
-	bool print = false, printline = true, test = false;
+	bool print = false, printline = false, test = false;
 	char operators[] = "+-*/%=", separators[] = "'(){}[],.:;!";
 	int i;
 
+	//discard all spaces
+	while (testChar == ' ')
+		testChar = file.get();
+
+	if (conditionset) {
+		if (testChar != '(') {
+			syntaxError("Condition not set");
+		}
+		conditionset = false;
+	}
 
 	//check if comment
 	if (testChar == '!') {
@@ -147,9 +196,9 @@ void lexer(int &j) {
 	}
 
 	//Check seprator
-	for (i = 0; i < 11; ++i)
+	for (int m = 0; m < 11; m++)
 	{
-		if (testChar == separators[i]) {
+		if (testChar == separators[m]) {
 			//cout << testChar << " is separator\n";
 			myfile << "\n\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar;
 			if (printline)
@@ -157,13 +206,13 @@ void lexer(int &j) {
 			myfile << endl;
 			if (print)
 				cout << "\nToken:\tSEPARATOR" << "\t\tLexme:\t" << testChar << endl;
-			syntaxSep();
+			myfile << syntaxSep();
 			flag = 1;
 			return;
 		}
 	}
 
-	//Check if number is real or integer??????**************************************
+	//Check if number
 	if (isdigit(testChar))
 	{
 		//cout << testChar << " is a number\n";
@@ -192,6 +241,7 @@ void lexer(int &j) {
 			myfile << " at line " << lineNum;
 		myfile << endl;
 		flag = 0;
+		myfile << syntaxNum();
 		return;
 	}
 
@@ -284,6 +334,8 @@ int main() {
 		testChar = file.get();
 		lexer(j);
 	}
+	if (stackindex != 0)
+		syntaxError("Closing argument not found");
 	
 	file.close();
 	myfile.close();
