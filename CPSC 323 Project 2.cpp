@@ -42,7 +42,35 @@ void syntaxError(string str)
 
 string syntaxId() {
 	string str;
-	str = " <Statement List>";
+	char operators[] = "+-*/%";
+	bool rightHandSide = true, firstOfLHS = true;
+
+	for (int i = 0; i < strlen(testCharList); i++)
+	{
+		if (testCharList[i] == '=')
+			rightHandSide = false;
+	}
+
+	for (int i = 0; i < strlen(testCharList); i++)
+	{
+		for (int j = 0; j < 5; j++)
+			if (testCharList[i] == operators[j])
+				firstOfLHS = false;
+	}
+
+	if (!rightHandSide)
+	{
+		if (firstOfLHS)
+			myfile << "<Expression> -> <Term> <Expression Prime>\n";
+		myfile << "<Term> -> <Factor><TermPrime>\n";
+		myfile << "<Factor> -> <Identifier>\n";
+	}
+	else 
+	{
+
+		myfile << "<Statement> -> <Assign>\n";
+		myfile << "<Assign> -> <Identifier> = <Expression>\n";
+	}
 	return str;
 }
 
@@ -332,6 +360,9 @@ int main() {
 		if (testChar == '\n')
 			lineNum++;
 		testChar = file.get();
+		testCharList[i] = testChar;
+		i++;
+		
 		lexer(j);
 	}
 	if (stackindex != 0)
