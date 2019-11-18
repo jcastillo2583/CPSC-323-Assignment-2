@@ -355,11 +355,14 @@ int main() {
 
 
 	
-	int i, j = 0;
+	int i = 0, j = 0;
 	while (!file.eof())
 	{
 		if (testChar == '\n')
+		{
 			lineNum++;
+			testCharList[0] = NULL;
+		}
 		testChar = file.get();
 		testCharList[i] = testChar;
 		i++;
