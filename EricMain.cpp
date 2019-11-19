@@ -1,4 +1,3 @@
-#include "pch.h"
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -34,7 +33,7 @@ void syntaxError(string str)
 {
 	//Clear output file
 	myfile.close();
-	myfile.open("Syntax Analysis", ios::out | ios::trunc);
+	myfile.open("Syntax Analysis.txt", ios::out | ios::trunc);
 	// Output error message
 	myfile << "ERROR: " << str << " at line: " << lineNum;
 	exit(EXIT_FAILURE);
@@ -193,12 +192,12 @@ void lexer(int &j) {
 	while (testChar == ' ')
 		testChar = file.get();
 
-	if (conditionset) {
+	/*if (conditionset) {
 		if (testChar != '(') {
 			syntaxError("Condition not set");
 		}
 		conditionset = false;
-	}
+	}*/
 
 	//check if comment
 	if (testChar == '!') {
