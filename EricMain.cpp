@@ -53,15 +53,14 @@ string syntaxId() {
 			rightHandSide = false;
 	}
 
-	for (int i = 0; i < strlen(testCharList); i++)
-	{
-		for (int j = 0; j < 5; j++)
-			if (testCharList[i] == operators[j])
-				firstOfLHS = false;
-	}
-
 	if (!rightHandSide)
 	{
+		for (int i = 0; i < strlen(testCharList); i++)
+		{
+			for (int j = 0; j < 5; j++)
+				if (testCharList[i] == operators[j])
+					firstOfLHS = false;
+		}
 		if (firstOfLHS)
 			myfile << "<Expression> -> <Term> <Expression Prime>\n";
 		myfile << "<Term> -> <Factor><TermPrime>\n";
@@ -69,7 +68,6 @@ string syntaxId() {
 	}
 	else
 	{
-
 		myfile << "<Statement> -> <Assign>\n";
 		myfile << "<Assign> -> <Identifier> = <Expression>\n";
 	}
@@ -357,15 +355,17 @@ int main() {
 	int i = 0, j = 0;
 	while (!file.eof())
 	{
-		if (testChar == '\n')
-		{
-			lineNum++;
-			testCharList[0] = NULL;
-		}
+		
 		testChar = file.get();
 		testCharList[i] = testChar;
 		i++;
-
+		if (testChar == '\n')
+		{
+			lineNum++;
+			for(int i = 0; i < 20; i++)
+				testCharList[i] = '\0';
+			i = 0;
+		}
 		lexer(j);
 	}
 	if (stackindex != 0)
